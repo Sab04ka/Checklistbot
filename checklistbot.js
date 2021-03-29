@@ -52,6 +52,21 @@ bot.start(async ctx => { //ответ бота а команду /start
     }
 })
 
+bot.command('admin', async ctx => { //ответ бота а команду /start
+    ctx.reply('Hi ' + ctx.message.from.first_name, buttons.button_Goodmorning)
+    const user = await User.findOne({chatid:ctx.message.chat.id})
+    if(!user){ //сохраняем пользователей в базу данных, если пользователь есть в базе данных, то не сохраняет
+        const newuser = new User({ name: ctx.message.from.first_name, chatid: ctx.message.from.id, role: 'admin', leave: false, where: 'non', much: 'non'})
+        newuser.save((err,saved)=>{
+            if (err) console.log(err)
+            if (saved) console.log('Пользователь сохранен')
+            ctx.session.step = 0
+        })
+    } else {
+        console.log('Такой пользователь уже существует')
+    }
+})
+
 bot.hears('Доброе утро', async ctx => {
     ctx.reply('Доброе утро и приятного вам дня, отправьте фотоотчет о приходе на работу:', buttons.button_clear)
     ctx.session.step = 1
