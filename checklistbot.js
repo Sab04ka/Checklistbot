@@ -20,8 +20,10 @@ const userScheme = new Schema({ //создаем схемы для юзеров 
 const User = mongoose.model("User", userScheme)
 
 async function HyAdmin(){
-    let admin = await User.findOne({role: 'admin'})
-    bot.telegram.sendMessage(admin.chatid, 'Добрый день создатель', buttons.button_clear)
+    let admin = await User.find({role: 'admin'})
+    for(let i = 0; i < admin.length; i++){
+        bot.telegram.sendMessage(admin[i].chatid, 'Добрый день создатель', buttons.button_clear)
+    }
 }
 
 async function Timer(){
@@ -53,7 +55,7 @@ bot.start(async ctx => { //ответ бота а команду /start
 })
 
 bot.command('admin', async ctx => { //ответ бота а команду /start
-    ctx.reply('Hi ' + ctx.message.from.first_name, buttons.button_Goodmorning)
+    ctx.reply('Hi ' + ctx.message.from.first_name)
     const user = await User.findOne({chatid:ctx.message.chat.id})
     if(!user){ //сохраняем пользователей в базу данных, если пользователь есть в базе данных, то не сохраняет
         const newuser = new User({ name: ctx.message.from.first_name, chatid: ctx.message.from.id, role: 'admin', leave: false, where: 'non', much: 'non'})
@@ -85,26 +87,32 @@ bot.hears('Добрый вечер', async ctx => {
 })
 
 bot.on('photo', async ctx => {
-    let admin = await User.findOne({role: 'admin'})
+    let admin = await User.find({role: 'admin'})
     switch(ctx.session.step){
         case 1:
             let usercome = ctx.update.message.photo[0].file_id
-            await bot.telegram.sendPhoto(admin.chatid, usercome)
-            await bot.telegram.sendMessage(admin.chatid, 'Сотрудник ' + ctx.message.from.first_name + ' прибыл на работу')
+            for(let i = 0; i < admin.length; i++){
+                await bot.telegram.sendPhoto(admin[i].chatid, usercome)
+                await bot.telegram.sendMessage(admin[i].chatid, 'Сотрудник ' + ctx.message.from.first_name + ' прибыл на работу')
+            }
             ctx.reply('Ваш отчет принят', buttons.button_taketime)
             ctx.session.step = 0
             break
         case 4:
             let usercomeagain = ctx.update.message.photo[0].file_id
-            await bot.telegram.sendPhoto(admin.chatid, usercomeagain)
-            await bot.telegram.sendMessage(admin.chatid, 'Сотрудник ' + ctx.message.from.first_name + ' вернулся на работу после отсутсвия')
+            for(let i = 0; i < admin.length; i++){
+                await bot.telegram.sendPhoto(admin[i].chatid, usercomeagain)
+                await bot.telegram.sendMessage(admin[i].chatid, 'Сотрудник ' + ctx.message.from.first_name + ' вернулся на работу после отсутсвия')
+            }
             ctx.reply('Ваш отчет принят', buttons.button_taketime)
             ctx.session.step = 0
             break
         case 6:
             let usergohome = ctx.update.message.photo[0].file_id
-            await bot.telegram.sendPhoto(admin.chatid, usergohome)
-            await bot.telegram.sendMessage(admin.chatid, 'Сотрудник ' + ctx.message.from.first_name + ' ушел домой')
+            for(let i = 0; i < admin.length; i++){
+                await bot.telegram.sendPhoto(admin.chatid, usergohome)
+                await bot.telegram.sendMessage(admin.chatid, 'Сотрудник ' + ctx.message.from.first_name + ' ушел домой')
+            }
             ctx.reply('Ваш отчет принят', buttons.button_Goodmorning)
             ctx.session.step = 0
             break
@@ -128,8 +136,10 @@ bot.on('text', async ctx => {
         case 5:
             ctx.reply('Ваш ответ учтен, спасибо за отклик, ваше мнение важен для нас')
             ctx.reply('Отправьте пожалуйста фотоотчет:')
-            let admin = await User.findOne({role: 'admin'})
-            bot.telegram.sendMessage(admin.chatid, 'Сотрудник ' + ctx.update.message.from.first_name + ' оставил отзыв: ' + ctx.update.message.text)
+            let admin = await User.find({role: 'admin'})
+            for(let i = 0; i < admin.length; i++){
+                bot.telegram.sendMessage(admin[i].chatid, 'Сотрудник ' + ctx.update.message.from.first_name + ' оставил отзыв: ' + ctx.update.message.text)
+            }
             ctx.session.step = 6
             break
         default:
@@ -138,12 +148,14 @@ bot.on('text', async ctx => {
 })
 
 bot.on('callback_query', async ctx => {
-    let admin = await User.findOne({role: 'admin'})
+    let admin = await User.find({role: 'admin'})
     if(ctx.update.callback_query.data == 'yes'){
         let ctx_user = await User.findOne({chatid: ctx.update.callback_query.from.id})
         ctx.deleteMessage()
         ctx.reply('Ваш ответ принят и отправлен руководителю, вы можете идти', buttons.button_timeon)
-        bot.telegram.sendMessage(admin.chatid, 'Сотрудник ' + ctx_user.name + ' отпросился с работы по причине: "' + ctx_user.where + '" на ' + ctx_user.much + ' времени')
+        for(let i = 0; i < admin.length; i++){
+            bot.telegram.sendMessage(admin[i].chatid, 'Сотрудник ' + ctx_user.name + ' отпросился с работы по причине: "' + ctx_user.where + '" на ' + ctx_user.much + ' времени')
+        }
     } else if (ctx.update.callback_query.data == 'no'){
         ctx.deleteMessage()
         ctx.reply('Ваша заявка успешно отменена', buttons.button_taketime)
