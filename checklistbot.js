@@ -2,7 +2,8 @@ const { Telegraf } = require('telegraf') //подключаем библеоте
 const mongoose = require("mongoose") 
 const Schema = mongoose.Schema
 const bot = new Telegraf('1605384579:AAFNYO0xVdUx8F5pIlhLbN8GswIvwlyK_Zo') //сюда помещается токен, который дал botFather
-const db = "mongodb://localhost:27017/checklistdb"; //токен базы данных
+const db = "mongodb://localhost:27017/checklistdb" //токен базы данных
+// const db = "134.209.81.168"
 const session = require('telegraf/session.js') 
 mongoose.connect(db, { useUnifiedTopology: true, useNewUrlParser: true })
 bot.use(session())
