@@ -166,6 +166,6 @@ try {
     Timer()
     HyAdmin()
 } catch(err){
-    bot.telegram.sendMessage(822415241, 'Проверьте бота, херня произошла')
+    bot.telegram.sendMessage(822415241, 'Проверьте бота, херня произошла ' + err)
 }
 bot.launch() // запуск бота
