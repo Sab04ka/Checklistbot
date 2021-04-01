@@ -37,7 +37,7 @@ try {
                     bot.telegram.sendMessage(allusers[i].chatid, 'Рабочее время истекло, вы можете идти', buttons.button_Goodbye)
                 }
             }
-        }, 5000)
+        }, 1000)
     }
 
     bot.start(async ctx => { //ответ бота а команду /start
